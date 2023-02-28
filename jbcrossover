@@ -1,0 +1,30 @@
+//@version=5
+strategy(title="jb's crossover", overlay=true)
+
+ma20 = ta.ema(close, 20)
+ma50 = ta.ema(close, 50)
+ma200 = ta.ema(close, 200)
+
+plot(ma20, color=color.red, style=plot.style_line, title="Daily MMA20", linewidth=2)
+plot(ma50, color=color.green, style=plot.style_line, title="Daily MMA50", linewidth=2)
+plot(ma200, color=color.blue, style=plot.style_line, title="Daily MMA200", linewidth=2)
+
+// Entry condition: 20-day EMA crosses above 50-day EMA
+var crossover_condition = ta.crossover(ma20, ma50)
+
+if ta.crossover(ma20, ma50)
+    strategy.entry("Long", strategy.long, qty=100)
+
+// Stop loss condition: current price is 5% less than entry
+if close < (strategy.position_avg_price * 0.85)
+    strategy.exit("Stop", "Long", loss = strategy.position_avg_price)
+
+// // Take profit condition: if there is a drop of more than 1% of the previous candle
+// if ta.change(close) < -0.01
+//     strategy.exit("Target", "Long",  profit = strategy.position_avg_price )
+
+// Take profit condition: if the current candle closes lower than the previous candle
+
+// if close[1] < close[3]
+if close > strategy.position_avg_price * 1.21
+    strategy.exit("Target", "Long",  profit = strategy.position_avg_price )
